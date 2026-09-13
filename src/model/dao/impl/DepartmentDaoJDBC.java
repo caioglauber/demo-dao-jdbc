@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import db.DB;
@@ -21,7 +22,29 @@ public class DepartmentDaoJDBC implements DepartmentDao {
 
 	@Override
 	public void insert(Department obj) {
-		// TODO Auto-generated method stub
+		PreparedStatement st = null;
+		try {
+
+			st = conn.prepareStatement("INSERT INTO department (Name) VALUES (?) ",
+					Statement.RETURN_GENERATED_KEYS);
+
+			st.setString(1, obj.getName());
+
+			int rowsAffected = st.executeUpdate();
+
+			if (rowsAffected > 0) {
+				ResultSet rs = st.getGeneratedKeys();
+				if (rs.next()) {
+					int id = rs.getInt(1);
+					obj.setId(id);
+				}
+			}
+
+		} catch (SQLException e) {
+			throw new DbException("Unexpected ERROR! No rows Affected!");
+		} finally {
+			DB.closeStatement(st);
+		}
 
 	}
 
@@ -41,28 +64,26 @@ public class DepartmentDaoJDBC implements DepartmentDao {
 	public Department findById(Integer id) {
 		PreparedStatement st = null;
 		ResultSet rs = null;
-		
+
 		try {
-			st = conn.prepareStatement(
-					"SELECT * FROM department WHERE id = ? ");
-					
-					st.setInt(1, id);
-					rs = st.executeQuery();
-					
-					
-					if(rs.next()) {
-						Department obj = instatiateDepartement(rs);
-						return obj;
-					}
-					 return null;
-					
-		}catch (SQLException e) {
+			st = conn.prepareStatement("SELECT * FROM department WHERE id = ? ");
+
+			st.setInt(1, id);
+			rs = st.executeQuery();
+
+			if (rs.next()) {
+				Department obj = instatiateDepartement(rs);
+				return obj;
+			}
+			return null;
+
+		} catch (SQLException e) {
 			throw new DbException(e.getMessage());
-		}finally {
+		} finally {
 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
-		
+
 	}
 
 	private Department instatiateDepartement(ResultSet rs) throws SQLException {
@@ -74,12 +95,6 @@ public class DepartmentDaoJDBC implements DepartmentDao {
 
 	@Override
 	public List<Department> findAll() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Department> findByDepartment(Department department) {
 		// TODO Auto-generated method stub
 		return null;
 	}
