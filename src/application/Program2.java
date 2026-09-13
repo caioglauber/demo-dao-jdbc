@@ -18,10 +18,17 @@ public class Program2 {
 		Department department = departmentDao.findById(1);
 		System.out.println(department);
 		
-		System.out.println("\n=== Test 2: department findByName ===");
+		System.out.println("\n=== Test 2: insert department ===");
 		Department dep = new Department(null, "Finance");
 		departmentDao.insert(dep);
 		System.out.println("Done! New Department Id: " + dep.getId());
+		
+		System.out.println("\n=== Test 3: update department ===");
+		department.setName("Clothers");
+		departmentDao.update(department);
+		System.out.println("Update Complete");
+		
+		
 	}
 
 }
